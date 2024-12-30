@@ -1,70 +1,66 @@
-import React from "react";
-import { useState, useEffect } from "react";
-import "./Popup.css";
+import React, { useState, useEffect } from "react";
 
-const Popup = ({ movie, onClose }) => {
-    const [isVisible, setIsVisible] = useState(false);
+const Popup = ({ movieId, closePopup }) => {
+    const [movieData, setMovieData] = useState(null);
+    const [movieCredits, setMovieCredits] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // Smooth open animation
-    useEffect(() => {
-        if (movie) {
-            setIsVisible(true);
+    // Fetch movie data from TMDB API
+    const fetchMovieData = async () => {
+        try {
+            if (!movieId) {
+                throw new Error("Movie ID is undefined");
+            }
+
+            const movieResponse = await fetch(
+                `https://api.themoviedb.org/3/movie/${movieId}?api_key=606c3d033f24adbc9e4bc31450dd186f&language=en-US`
+            );
+            const movieData = await movieResponse.json();
+
+            const creditsResponse = await fetch(
+                `https://api.themoviedb.org/3/movie/${movieId}/credits?api_key=606c3d033f24adbc9e4bc31450dd186f&language=en-US`
+            );
+            const creditsData = await creditsResponse.json();
+
+            setMovieData(movieData);
+            setMovieCredits(creditsData);
+            setLoading(false);
+        } catch (error) {
+            console.error("Error fetching movie data: ", error);
+            setLoading(false);
         }
-    }, [movie]);
-
-    const handleClose = () => {
-        setIsVisible(false);
-        setTimeout(() => {
-            onClose(); // Trigger onClose after fade-out
-        }, 300); // Match the fade-out duration in CSS
     };
 
-    if (!movie) return null;
+    useEffect(() => {
+        fetchMovieData();
+    }, [movieId]);
 
-    // Prevent event bubbling for inner popup clicks
-    const handlePopupClick = (e) => e.stopPropagation();
+    if (loading) {
+        return <div>Loading...</div>;
+    }
+
+    if (!movieData || !movieCredits) {
+        return <div>Movie data not available</div>;
+    }
 
     return (
-        <div className={`popup-overlay ${isVisible ? "fade-in" : "fade-out"}`} onClick={handleClose}>
-            <div className="popup-content" onClick={handlePopupClick}>
-                <button className="close-btn" onClick={handleClose}>
-                    &times;
+        <div className="popup">
+            <div className="popup-content">
+                <button className="close" onClick={closePopup}>
+                    X
                 </button>
-                <div className="popup-header">
-                    <img
-                        src={`https://image.tmdb.org/t/p/w500${movie.backdrop_path}`}
-                        alt={movie.title}
-                        className="popup-banner"
-                    />
-                    <div className="popup-info">
-                        <h2 className="popup-title">{movie.title}</h2>
-                        <p className="popup-subtitle">Return to Hawkins for the Final Season</p>
-                        <div className="popup-buttons">
-                            <button className="btn play-btn">Play</button>
-                            <button className="btn like-btn">&#9825;</button>
-                        </div>
-                    </div>
-                </div>
-                <div className="popup-details">
-                    <p>
-                        <strong>Release Year:</strong> {movie.release_date.split("-")[0]}
-                    </p>
-                    <p>
-                        <strong>Genres:</strong> {movie.genre_ids.join(", ")}
-                    </p>
-                    <p>
-                        <strong>Rating:</strong> {movie.vote_average}/10
-                    </p>
-                    <p>{movie.overview}</p>
-                </div>
-                <div className="popup-episodes">
-                    <h3>Episodes</h3>
-                    <ul>
-                        <li>S1:E1 - "Chapter One: The Vanishing of Will Byers"</li>
-                        <li>S1:E2 - "Chapter Two: The Weirdo on Maple Street"</li>
-                        {/* Add more dynamically */}
-                    </ul>
-                </div>
+                <h2>{movieData.title}</h2>
+                <img
+                    src={`https://image.tmdb.org/t/p/w500${movieData.poster_path}`}
+                    alt={movieData.title}
+                />
+                <p>{movieData.overview}</p>
+                <h3>Cast</h3>
+                <ul>
+                    {movieCredits.cast.slice(0, 5).map((actor) => (
+                        <li key={actor.cast_id}>{actor.name}</li>
+                    ))}
+                </ul>
             </div>
         </div>
     );
