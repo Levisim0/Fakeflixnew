@@ -1,0 +1,128 @@
+/* Base styles */
+.popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.popup-overlay.fade-in {
+    opacity: 1;
+    visibility: visible;
+}
+
+.popup-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+.popup-content {
+    background: #181818;
+    color: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 80%;
+    max-width: 900px;
+    position: relative;
+    transform: translateY(-20px);
+    animation: popup-slide-in 0.3s ease forwards;
+}
+
+@keyframes popup-slide-in {
+    from {
+        transform: translateY(-20px);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+
+.close-btn {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    background: none;
+    color: #fff;
+    border: none;
+    font-size: 24px;
+    cursor: pointer;
+}
+
+.popup-header {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+}
+
+.popup-banner {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+}
+
+.popup-info {
+    position: absolute;
+    bottom: 10px;
+    left: 20px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.popup-title {
+    font-size: 32px;
+    font-weight: bold;
+}
+
+.popup-subtitle {
+    font-size: 16px;
+    color: #ccc;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 10px;
+}
+
+.btn {
+    background: #e50914;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn.like-btn {
+    background: transparent;
+    color: white;
+    border: 1px solid white;
+}
+
+.popup-details {
+    padding: 20px;
+    line-height: 1.6;
+    border-top: 1px solid #333;
+}
+
+.popup-details strong {
+    color: #e50914;
+}
+
+.popup-episodes {
+    padding: 20px;
+    border-top: 1px solid #333;
+}
+
+.popup-epis
